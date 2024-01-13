@@ -2,5 +2,6 @@
 .classpath
 .project
 /.settings/
-pom.xml
+.pom.xml
 README.md
+**/config.properties
