@@ -16,12 +16,20 @@ public class ObjetoEnviaEmail {
 	private static final String CONFIG_FILE = "config.properties";
 	private String email;
 	private String senha;
-
-	public ObjetoEnviaEmail() {
+	private String listaDestinatarios = "";
+	private String nomeRemetente = "";
+	private String assuntoEmail = "";
+	private String textoEmail = "";
+	
+	public ObjetoEnviaEmail(String listaDestinatarios, String nomeRemetente, String assuntoEmail, String textoEmail) {
+		this.listaDestinatarios = listaDestinatarios;
+		this.nomeRemetente = nomeRemetente;
+		this.assuntoEmail = assuntoEmail;
+		this.textoEmail = textoEmail;
 		carregarConfiguracoes();
 	}
-
-	public void enviarEmail(boolean enviaEmail) throws Exception {
+	
+	public void enviarEmail(boolean emailHtml) throws Exception {
 
 		// smtp: protocolo simples de transferência de email.
 		Properties propriedades = new Properties();
@@ -40,19 +48,23 @@ public class ObjetoEnviaEmail {
 			}
 		});
 		
-		Address[] paraUsuario = InternetAddress.parse("colocar email 1, colocar email 2, "
-				+ "colocar email 3");
+		Address[] paraUsuario = InternetAddress.parse(listaDestinatarios);
 
 		Message mensagem = new MimeMessage(sessao);
 		
-		mensagem.setFrom(new InternetAddress(email));
+		mensagem.setFrom(new InternetAddress(email, nomeRemetente));
 		mensagem.setRecipients(Message.RecipientType.TO, paraUsuario);
-		mensagem.setSubject("Chegou o email enviado com Java.");
-		mensagem.setText("Texto enviado com Java");
+		mensagem.setSubject(assuntoEmail);
+		
+		if (emailHtml) {
+			mensagem.setContent(textoEmail, "text/html; charset=utf-8");
+		}  else {
+			mensagem.setText(textoEmail);
+		}
 		
 		Transport.send(mensagem);
 		
-		System.out.println(sessao);
+		// System.out.println(sessao);
 	}
 
 	private void carregarConfiguracoes() {
